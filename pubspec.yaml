@@ -1,0 +1,41 @@
+name: tangankebaikan
+description: A new Flutter project.
+# Hapus semua baris repository, issue_tracker, dan versi jika itu bukan versi aplikasi Anda.
+
+environment:
+  sdk: ^3.2.0
+  flutter: ">=3.16.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Dependensi Anda yang sebenarnya:
+  google_fonts: ^6.1.0 
+  ffi: ^2.0.0              # Dependensi ini mungkin diperlukan jika Anda menggunakan paket yang memerlukan FFI
+  path: ^1.8.0
+  path_provider_platform_interface: ^2.1.0 # Ini sepertinya sisa dari path_provider, jika tidak perlu, hapus.
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0 # Boleh ditambahkan jika Anda ingin linting
+
+# ---------- BAGIAN KHUSUS FLUTTER (ASET & FONT) ----------
+flutter:
+
+  # Baris ini SANGAT penting untuk aplikasi Material Design
+  uses-material-design: true 
+
+  # Aset Gambar Anda (indentasi 2 spasi dari 'flutter:')
+  assets:
+    - assets/images/ 
+    # Tambahkan di sini jika Anda punya folder aset lain, misalnya:
+    # - assets/icons/
+
+  # Jika Anda menggunakan GoogleFonts, Anda mungkin tidak memerlukan bagian 'fonts' ini, 
+  # tetapi jika Anda menambahkan font lokal, tempatkan di sini.
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
