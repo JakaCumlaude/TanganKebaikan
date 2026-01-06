@@ -2,10 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'gallery_hub_page.dart'; 
-import 'volunteer_list_page.dart';
-import 'profile_page.dart';
-import 'project_registration_page.dart';
+import '../gallery/gallery_hub_page.dart'; 
+import '../volunteer/volunteer_list_page.dart';
+import '../profile/profile_page.dart';
+import '../project/project_registration_page.dart';
+import '../project/project_list_page.dart';
+
 
 // Menambahkan 'project' ke dalam Enum
 enum MenuTab { home, gallery, project, volunteer, profile }
@@ -61,28 +63,27 @@ class _DonaturHomePageState extends State<DonaturHomePage> {
   }
 
   void _onItemTapped(int index) {
-    if (index == 2) {
-      // Navigasi ke Halaman Registrasi Proyek (POST)
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ProjectRegistrationPage()),
-      ).then((_) => setState(() {})); // Refresh Home saat kembali
-    } else {
-      setState(() {
-        _selectedTab = MenuTab.values[index];
-      });
-    }
-  }
+  setState(() {
+    _selectedTab = MenuTab.values[index];
+  });
+}
+
 
   Widget _buildSelectedBody() {
-    switch (_selectedTab) {
-      case MenuTab.home: return _buildHomeContent(); 
-      case MenuTab.gallery: return const GalleryHubPage(); 
-      case MenuTab.volunteer: return const VolunteerListPage();
-      case MenuTab.profile: return const ProfilePage();
-      default: return _buildHomeContent();
-    }
+  switch (_selectedTab) {
+    case MenuTab.home:
+      return _buildHomeContent();
+    case MenuTab.gallery:
+      return const GalleryHubPage();
+    case MenuTab.project:
+      return const ProjectListPage(); // 🔥 INI
+    case MenuTab.volunteer:
+      return const VolunteerListPage();
+    case MenuTab.profile:
+      return const ProfilePage();
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

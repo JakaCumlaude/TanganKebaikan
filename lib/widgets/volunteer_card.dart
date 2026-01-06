@@ -5,7 +5,7 @@ class VolunteerCard extends StatelessWidget {
   final String city;
   final String imageUrl;
   final int needed;
-  final VoidCallback onTap; // TAMBAHKAN INI: Untuk menangkap aksi klik
+  final VoidCallback onTap;
 
   const VolunteerCard({
     super.key,
@@ -13,42 +13,42 @@ class VolunteerCard extends StatelessWidget {
     required this.city,
     required this.imageUrl,
     required this.needed,
-    required this.onTap, // TAMBAHKAN INI: Wajib diisi saat memanggil kartu
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 3,
       child: Column(
         children: [
-          Container(
-            height: 120,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-              color: Colors.grey.shade200,
-              image: DecorationImage(
-                image: NetworkImage(imageUrl),
-                fit: BoxFit.cover,
-              ),
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            child: Image.network(
+              imageUrl,
+              height: 140,
+              width: double.infinity,
+              fit: BoxFit.cover,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
+                Text(name,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.location_on, size: 14, color: Colors.red),
-                    Text(" $city", style: const TextStyle(color: Colors.grey)),
+                    const Icon(Icons.location_on,
+                        size: 14, color: Colors.red),
+                    const SizedBox(width: 4),
+                    Text(city,
+                        style: const TextStyle(color: Colors.grey)),
                   ],
                 ),
                 const Divider(),
@@ -57,13 +57,8 @@ class VolunteerCard extends StatelessWidget {
                   children: [
                     Text("Dibutuhkan: $needed Orang"),
                     ElevatedButton(
-                      // UBAH DI SINI: Gunakan parameter onTap yang sudah dibuat
-                      onPressed: onTap, 
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
-                      ),
-                      child: const Text("Lihat Detail", style: TextStyle(color: Colors.white)),
+                      onPressed: onTap,
+                      child: const Text("Lihat Detail"),
                     )
                   ],
                 )

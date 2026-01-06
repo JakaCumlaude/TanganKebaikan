@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tangankebaikan/widgets/custom_text_field.dart';
-import 'donatur_home_page.dart';
-import 'package:tangankebaikan/screens/user_list_screen.dart';
+import '../home/donatur_home_page.dart';
+import 'package:tangankebaikan/screens/user/user_list_screen.dart';
 
 
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tangankebaikan/screens/splash_screen.dart';
-import 'package:tangankebaikan/screens/login_screen.dart';
-import 'package:tangankebaikan/screens/register_screen.dart';
-import 'package:tangankebaikan/screens/volunteer_detail_page.dart';
-import 'package:tangankebaikan/screens/volunteer_registration_page.dart';
-import 'package:tangankebaikan/screens/volunteer_list_page.dart';
+import 'package:tangankebaikan/screens/home/splash_screen.dart';
+import 'package:tangankebaikan/screens/auth/login_screen.dart';
+import 'package:tangankebaikan/screens/auth/register_screen.dart';
+import 'package:tangankebaikan/screens/volunteer/volunteer_detail_page.dart';
+import 'package:tangankebaikan/screens/volunteer/volunteer_registration_page.dart';
+import 'package:tangankebaikan/screens/volunteer/volunteer_list_page.dart';
 import 'package:tangankebaikan/screens/registration_history_page.dart';
 
 void main() {

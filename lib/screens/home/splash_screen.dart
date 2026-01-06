@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart'; 
 
 // Import halaman tujuan
-import 'login_screen.dart'; 
-import 'register_screen.dart'; 
+import '../auth/login_screen.dart'; 
+import '../auth/register_screen.dart'; 
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
