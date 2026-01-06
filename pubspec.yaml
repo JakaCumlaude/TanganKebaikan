@@ -1,0 +1,41 @@
+name: tangankebaikan
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.0 <4.0.0' # Menggunakan rentang versi yang direkomendasikan untuk SDK 3.x
+
+# Dependencies specify other packages that your package needs in order to work.
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.1.0
+  
+  # HANYA SATU entri untuk font_awesome_flutter.
+  # Saya menggunakan versi yang lebih tinggi (10.12.0) dan menghilangkan yang duplikat (10.6.0).
+  font_awesome_flutter: ^10.12.0
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Saya menyesuaikan versi flutter_lints agar kompatibel dengan Flutter SDK terbaru.
+  flutter_lints: ^3.0.0 
+
+# Bagian lain file pubspec.yaml
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+  assets:
+    - assets/images/

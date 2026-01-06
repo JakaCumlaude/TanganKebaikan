@@ -1,0 +1,18 @@
+# Flutter/Dart
+/build/
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+
+# Android
+android/local.properties
+*.keystore
+*.jks
+
+# iOS
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+
+# Others
+.DS_Store
