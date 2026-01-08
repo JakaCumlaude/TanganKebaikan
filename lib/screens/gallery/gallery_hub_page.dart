@@ -1,161 +1,116 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'gallery_detail_page.dart'; 
+import 'package:http/http.dart' as http;
+
+import 'gallery_detail_page.dart';
+import '../../models/gallery_model.dart';
 
 class GalleryHubPage extends StatelessWidget {
   const GalleryHubPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    // Definisi warna agar seragam dengan halaman utama
-    const Color primaryBlue = Color(0xFF4A90E2);
+  final String apiUrl =
+      "https://6950dbe970e1605a1088a896.mockapi.io/galleries";
 
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        // Menggunakan NestedScrollView agar TabBar bisa ikut scrolling dengan SliverAppBar
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverAppBar(
-                // Menghapus tombol back otomatis sesuai permintaan
-                automaticallyImplyLeading: false, 
-                backgroundColor: primaryBlue,
-                // Tinggi disamakan dengan header DonaturHomePage (100.0)
-                expandedHeight: 100.0, 
-                pinned: true,
-                elevation: 0,
-                flexibleSpace: const FlexibleSpaceBar(
-                  titlePadding: EdgeInsets.only(left: 20, bottom: 62),
-                  centerTitle: false,
-                  title: Text(
-                    'Galeri Kebaikan',
-                    style: TextStyle(
-                      fontSize: 18, 
-                      fontWeight: FontWeight.bold, 
-                      color: Colors.white
-                    ),
-                  ),
-                ),
-                // TabBar diletakkan di bagian bottom SliverAppBar
-                bottom: const TabBar(
-                  indicatorColor: Colors.white,
-                  indicatorWeight: 3,
-                  labelColor: Colors.white, // Warna teks tab yang dipilih menjadi putih
-                  unselectedLabelColor: Colors.white70, // Warna teks tab yang tidak dipilih (putih transparan)
-                  labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                  tabs: [
-                    Tab(text: 'Semua'),
-                    Tab(text: 'Proyek Saya'),
-                    Tab(text: 'Terdekat'),
-                  ],
-                ),
-              ),
-            ];
-          },
-          body: TabBarView(
-            children: [
-              _buildGalleryGrid(context),
-              const Center(child: Text('Proyek yang Anda bantu akan muncul di sini')),
-              const Center(child: Text('Proyek di sekitar lokasi Anda')),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-             // Aksi untuk berbagi dampak
-          },
-          backgroundColor: primaryBlue,
-          icon: const Icon(Icons.share, color: Colors.white),
-          label: const Text(
-            'Bagikan Dampak (+10 Poin)', 
-            style: TextStyle(color: Colors.white)
-          ),
-        ),
-      ),
-    );
+  // GET ALL GALLERIES
+  Future<List<Gallery>> fetchGalleries() async {
+    final res = await http.get(Uri.parse(apiUrl));
+
+    if (res.statusCode == 200) {
+      final List data = json.decode(res.body);
+      return data.map((e) => Gallery.fromJson(e)).toList();
+    } else {
+      throw Exception("Gagal memuat galeri");
+    }
   }
 
-  Widget _buildGalleryGrid(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(12),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.8,
-      ),
-      itemCount: 6,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            // Navigasi ke halaman detail
-            Navigator.push(
-              context, 
-              MaterialPageRoute(builder: (context) => const GalleryDetailPage())
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Galeri Dampak")),
+      body: FutureBuilder<List<Gallery>>(
+        future: fetchGalleries(), // ✅ FIX
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("Error: ${snapshot.error}"),
             );
-          },
-          child: Card(
-            elevation: 2,
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Image.network(
-                      'https://via.placeholder.com/200', 
-                      height: 120, 
-                      width: double.infinity, 
-                      fit: BoxFit.cover
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("Belum ada galeri"));
+          }
+
+          final galleries = snapshot.data!;
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 0.75,
+            ),
+            itemCount: galleries.length,
+            itemBuilder: (context, index) {
+              final g = galleries[index];
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => GalleryDetailPage(gallery: g),
                     ),
-                    Positioned( 
-                      top: 8, 
-                      left: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.green, 
-                          borderRadius: BorderRadius.circular(8)
-                        ),
-                        child: const Text(
-                          '✅ Selesai', 
-                          style: TextStyle(color: Colors.white, fontSize: 10)
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
+                  );
+                },
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  clipBehavior: Clip.antiAlias,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Pembangunan Sumur A', 
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Expanded(
+                        child: Image.network(
+                          g.image,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) {
+                            return Container(
+                              color: Colors.grey.shade300,
+                              child: const Icon(
+                                Icons.broken_image,
+                                size: 40,
+                                color: Colors.grey,
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                      SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.favorite, size: 14, color: Colors.red),
-                          SizedBox(width: 4),
-                          Text(
-                            '1.2rb Reaksi', 
-                            style: TextStyle(fontSize: 11, color: Colors.grey)
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Text(
+                          g.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
