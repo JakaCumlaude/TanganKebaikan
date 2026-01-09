@@ -1,18 +1,65 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'models/project_model.dart';
 
 class ApiService {
   static const String baseUrl =
-      "https://YOUR_MOCKAPI_ID.mockapi.io/api/v1";
+      "https://695eb0f22556fd22f679226c.mockapi.io";
 
-  // GET
+  /* =======================
+     PROJECT
+  ======================== */
+
+  // GET Projects
+  static Future<List<Project>> fetchProjects() async {
+    try {
+      final response =
+          await http.get(Uri.parse("$baseUrl/projects"));
+
+      if (response.statusCode == 200) {
+        final List data = jsonDecode(response.body);
+        return data.map((e) => Project.fromJson(e)).toList();
+      } else {
+        throw Exception("Gagal mengambil data proyek");
+      }
+    } catch (e) {
+      throw Exception("Kesalahan koneksi: $e");
+    }
+  }
+
+  /* =======================
+     DONATION
+  ======================== */
+
+  // POST Donation
+  static Future<bool> postDonation(
+      Map<String, dynamic> data) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/donations"),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
+      return response.statusCode == 201;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /* =======================
+     GENERIC CRUD (OPSIONAL)
+  ======================== */
+
+  // GET generic
   static Future<List<dynamic>> getData(String endpoint) async {
-    final response = await http.get(Uri.parse("$baseUrl/$endpoint"));
+    final response =
+        await http.get(Uri.parse("$baseUrl/$endpoint"));
     return jsonDecode(response.body);
   }
 
-  // POST
-  static Future<void> postData(String endpoint, Map data) async {
+  // POST generic
+  static Future<void> postData(
+      String endpoint, Map<String, dynamic> data) async {
     await http.post(
       Uri.parse("$baseUrl/$endpoint"),
       headers: {'Content-Type': 'application/json'},
@@ -20,8 +67,9 @@ class ApiService {
     );
   }
 
-  // PUT
-  static Future<void> putData(String endpoint, String id, Map data) async {
+  // PUT generic
+  static Future<void> putData(
+      String endpoint, String id, Map<String, dynamic> data) async {
     await http.put(
       Uri.parse("$baseUrl/$endpoint/$id"),
       headers: {'Content-Type': 'application/json'},

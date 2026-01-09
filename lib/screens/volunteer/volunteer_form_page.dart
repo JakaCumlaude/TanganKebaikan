@@ -6,7 +6,10 @@ import '../../models/volunteer_model.dart';
 class VolunteerFormPage extends StatefulWidget {
   final Volunteer? volunteer;
 
-  const VolunteerFormPage({super.key, this.volunteer});
+  const VolunteerFormPage({
+    super.key,
+    this.volunteer,
+  });
 
   @override
   State<VolunteerFormPage> createState() => _VolunteerFormPageState();
@@ -14,6 +17,7 @@ class VolunteerFormPage extends StatefulWidget {
 
 class _VolunteerFormPageState extends State<VolunteerFormPage> {
   final _formKey = GlobalKey<FormState>();
+
   final String mockUrl =
       "https://694d37b1ad0f8c8e6e200fe8.mockapi.io/volunteers";
 
@@ -26,12 +30,22 @@ class _VolunteerFormPageState extends State<VolunteerFormPage> {
   @override
   void initState() {
     super.initState();
-    nameC = TextEditingController(text: widget.volunteer?.name ?? "");
-    descC = TextEditingController(text: widget.volunteer?.description ?? "");
-    imageC = TextEditingController(text: widget.volunteer?.image ?? "");
-    locationC = TextEditingController(text: widget.volunteer?.location ?? "");
-    linkC =
-        TextEditingController(text: widget.volunteer?.registrationLink ?? "");
+
+    nameC = TextEditingController(
+      text: widget.volunteer?.name ?? "",
+    );
+    descC = TextEditingController(
+      text: widget.volunteer?.description ?? "",
+    );
+    imageC = TextEditingController(
+      text: widget.volunteer?.image ?? "",
+    );
+    locationC = TextEditingController(
+      text: widget.volunteer?.location ?? "",
+    );
+    linkC = TextEditingController(
+      text: widget.volunteer?.registrationLink ?? "",
+    );
   }
 
   Future<void> submit() async {
@@ -68,9 +82,11 @@ class _VolunteerFormPageState extends State<VolunteerFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.volunteer == null
-            ? "Tambah Volunteer"
-            : "Edit Volunteer"),
+        title: Text(
+          widget.volunteer == null
+              ? "Tambah Volunteer"
+              : "Edit Volunteer",
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -87,7 +103,7 @@ class _VolunteerFormPageState extends State<VolunteerFormPage> {
               ElevatedButton(
                 onPressed: submit,
                 child: const Text("Simpan"),
-              )
+              ),
             ],
           ),
         ),

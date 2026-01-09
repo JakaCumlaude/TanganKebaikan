@@ -16,47 +16,48 @@ class _ProfilePageState extends State<ProfilePage> {
   final Color primaryBlue = const Color(0xFF4A90E2);
   late Future<Profile> _profileFuture;
 
-  final String apiUrl =
-      "https://6950dbe970e1605a1088a896.mockapi.io/profile/1";
+  final String baseUrl =
+      "https://6950dbe970e1605a1088a896.mockapi.io/profile";
 
   @override
   void initState() {
     super.initState();
-    _profileFuture = fetchProfile(); // ✅ DIPANGGIL SEKALI
+    _profileFuture = fetchProfile();
   }
 
   Future<Profile> fetchProfile() async {
-  final res = await http.get(
-    Uri.parse("https://6950dbe970e1605a1088a896.mockapi.io/profile"),
+    final res = await http.get(Uri.parse(baseUrl));
+
+    if (res.statusCode == 200) {
+      final List data = json.decode(res.body);
+      if (data.isEmpty) throw Exception("Data profil kosong");
+      return Profile.fromJson(data.first);
+    } else {
+      throw Exception("Gagal memuat profil");
+    }
+  }
+
+  Future<void> updateProfile(String id, String name, String role) async {
+  final res = await http.put(
+    Uri.parse("$baseUrl/$id"),
+    headers: {"Content-Type": "application/json"},
+    body: json.encode({
+      "name": name,
+      "role": role,
+    }),
   );
 
   if (res.statusCode == 200) {
-    final List data = json.decode(res.body);
+    setState(() {
+      _profileFuture = fetchProfile(); // 🔥 refresh data di halaman yang sama
+    });
 
-    if (data.isEmpty) {
-      throw Exception("Data profil kosong");
-    }
-
-    return Profile.fromJson(data.first); // 🔥 AMAN
-  } else {
-    throw Exception("Gagal memuat profil");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Profil berhasil diperbarui")),
+    );
   }
 }
 
-
-  Future<void> updateProfile(String name, String role) async {
-    await http.put(
-      Uri.parse(apiUrl),
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({
-        "name": name,
-        "role": role,
-      }),
-    );
-    setState(() {
-      _profileFuture = fetchProfile(); // 🔄 refresh setelah edit
-    });
-  }
 
   void showEditDialog(Profile profile) {
     final nameController = TextEditingController(text: profile.name);
@@ -87,6 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ElevatedButton(
             onPressed: () async {
               await updateProfile(
+                profile.id,
                 nameController.text,
                 roleController.text,
               );
@@ -104,14 +106,15 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFF),
       body: FutureBuilder<Profile>(
-         future: _profileFuture,
-  builder: (context, snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (snapshot.hasError) {
-      return Center(child: Text(snapshot.error.toString()));
-    }
+        future: _profileFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          }
 
           final profile = snapshot.data!;
 
@@ -125,12 +128,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   "Edit Profil",
                   () => showEditDialog(profile),
                 ),
-                _buildProfileMenu(
-                  Icons.volunteer_activism,
-                  "Riwayat Kegiatan",
-                  () => Navigator.pushNamed(context, '/activity-history'),
-                ),
-                const Divider(),
                 _buildProfileMenu(
                   Icons.logout,
                   "Keluar",
@@ -155,20 +152,15 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       child: Column(
         children: [
-          const CircleAvatar(
-            radius: 50,
-            child: Icon(Icons.person, size: 60),
-          ),
+          const CircleAvatar(radius: 50, child: Icon(Icons.person, size: 60)),
           const SizedBox(height: 15),
           Text(
             profile.name,
             style: const TextStyle(
                 fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
           ),
-          Text(
-            profile.role,
-            style: const TextStyle(color: Colors.white70),
-          ),
+          Text(profile.role,
+              style: const TextStyle(color: Colors.white70)),
         ],
       ),
     );
@@ -208,8 +200,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildProfileMenu(
-      IconData icon, String title, VoidCallback onTap,
-      {bool isLogout = false}) {
+    IconData icon,
+    String title,
+    VoidCallback onTap, {
+    bool isLogout = false,
+  }) {
     return ListTile(
       leading: Icon(icon, color: isLogout ? Colors.red : primaryBlue),
       title: Text(title,
@@ -228,8 +223,9 @@ class _ProfilePageState extends State<ProfilePage> {
         content: const Text("Yakin ingin keluar?"),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Batal")),
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal"),
+          ),
           ElevatedButton(
             onPressed: () {
               Navigator.pushAndRemoveUntil(
